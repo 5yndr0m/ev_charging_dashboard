@@ -457,7 +457,7 @@ export function StationChargerManagement() {
               const availableChargers = station.chargers.filter((c: Charger) => c.status === "Available").length
 
               return (
-                <Card key={station.id} className="bg-gray-900/50 border-cyan-500/20">
+                <Card key={station._id || station.id} className="bg-gray-900/50 border-cyan-500/20">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div>
@@ -465,7 +465,7 @@ export function StationChargerManagement() {
                           <MapPin className="w-5 h-5 text-cyan-400" />
                           {station.location}
                         </CardTitle>
-                        <p className="text-sm text-gray-400 mt-1">Station ID: {station.id}</p>
+                        <p className="text-sm text-gray-400 mt-1">Station ID: {station._id || station.id}</p>
                       </div>
                       <div className="flex gap-2">
                         <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/50">

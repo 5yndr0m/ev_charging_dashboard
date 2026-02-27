@@ -67,7 +67,7 @@ export function MaintenanceMonitoringSystem({ stations }: MaintenanceMonitoringS
   // Dynamic Data Generation
   const chargerHealth: ChargerHealth[] = stations.flatMap(station =>
     (station.chargers || []).map((charger: any) => ({
-      id: charger.id,
+      id: charger._id || charger.id,
       station: station.location,
       temperature: Math.floor(Math.random() * (75 - 30) + 30),
       voltage: Math.floor(Math.random() * (400 - 360) + 360),

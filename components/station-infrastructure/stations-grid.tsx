@@ -6,7 +6,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { stationsData } from "@/lib/data"
 
 interface Station {
-  id: string
+  id?: string
+  _id?: string
   location: string
   totalChargers: number
   powerRating: number
@@ -20,6 +21,7 @@ interface Station {
 }
 
 interface StationsGridProps {
+  stations: Station[]
   onStationSelect: (stationId: string) => void
 }
 
@@ -47,9 +49,14 @@ function getCategory(totalChargers: number) {
   return { label: "E – Micro Station", color: "bg-gradient-to-r from-red-500/20 to-pink-500/20 text-red-300", iconColor: "text-red-400" }
 }
 
-export function StationsGrid({ onStationSelect }: StationsGridProps) {
+export function StationsGrid({ stations: passedStations, onStationSelect }: StationsGridProps) {
+  // Use passed stations or fallback to static data
+  const stations = Array.isArray(passedStations) && passedStations.length > 0
+    ? passedStations
+    : stationsData.stations;
+
   // Group stations by category
-  const groupedStations = stationsData.stations.reduce((acc, station) => {
+  const groupedStations = stations.reduce((acc, station: Station) => {
     const { label } = getCategory(station.totalChargers)
     if (!acc[label]) {
       acc[label] = []
@@ -128,13 +135,14 @@ export function StationsGrid({ onStationSelect }: StationsGridProps) {
 
             {/* Stations Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {stations.map((station, index) => {
-                const availableChargers = getDeterministicAvailableChargers(station.id, station.totalChargers)
+              {stations.map((station: Station, index: number) => {
+                const stationId = station._id || station.id || ""
+                const availableChargers = getDeterministicAvailableChargers(stationId, station.totalChargers)
                 const category = getCategory(station.totalChargers)
 
                 return (
                   <motion.div
-                    key={station.id}
+                    key={stationId}
                     custom={index}
                     variants={cardVariants}
                     initial="hidden"
@@ -142,7 +150,7 @@ export function StationsGrid({ onStationSelect }: StationsGridProps) {
                     viewport={{ once: true }}
                     whileHover="hover"
                     className="cursor-pointer"
-                    onClick={() => onStationSelect(station.id)}
+                    onClick={() => onStationSelect(stationId)}
                   >
                     <Card className="bg-gradient-to-b from-gray-900/80 to-gray-800/80 border-cyan-500/30 hover:border-cyan-400/50 transition-all duration-300 rounded-xl overflow-hidden">
                       <CardContent className="p-6">
@@ -154,7 +162,7 @@ export function StationsGrid({ onStationSelect }: StationsGridProps) {
                             </h3>
                             <div className="flex items-center gap-2 text-gray-300">
                               <MapPin className="w-4 h-4 text-cyan-300" />
-                              <span className="text-sm">Station {station.id}</span>
+                              <span className="text-sm">Station {station._id || station.id}</span>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
